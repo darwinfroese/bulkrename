@@ -236,14 +236,20 @@ func renameDirectory(parent string, d dir) error {
 	orig := fmt.Sprintf("%s/%s", parent, d.OriginalName)
 	upd := fmt.Sprintf("%s/%s", parent, d.UpdatedName)
 
-	err := os.Rename(orig, upd)
-	if err != nil {
-		return err
+	if orig != upd {
+		err := os.Rename(orig, upd)
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, f := range d.Files {
-		origFN := fmt.Sprintf("%s/%s", parent, f.OriginalName)
-		updFN := fmt.Sprintf("%s/%s", parent, f.UpdatedName)
+		origFN := fmt.Sprintf("%s/%s", upd, f.OriginalName)
+		updFN := fmt.Sprintf("%s/%s", upd, f.UpdatedName)
+
+		if origFN == updFN {
+			continue
+		}
 
 		err := os.Rename(origFN, updFN)
 		if err != nil {
